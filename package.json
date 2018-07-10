@@ -1,0 +1,14 @@
+{
+  "name": "axios",
+  "description": "mirror of axios for bower, bundled and exposed as ES module",
+  "author": "Mikhail Bashkirov <bashmish@gmail.com>",
+  "main": "index.js",
+  "devDependencies": {
+    "axios": "0.18.0",
+    "rollup": "^0.62.0",
+    "rollup-plugin-commonjs": "^9.1.3"
+  },
+  "scripts": {
+    "build": "rollup -c ./rollup.config.js"
+  }
+}
