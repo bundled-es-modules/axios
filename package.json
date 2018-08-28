@@ -1,6 +1,7 @@
 {
-  "name": "axios",
-  "description": "mirror of axios for bower, bundled and exposed as ES module",
+  "name": "@bundled-es-modules/axios",
+  "version": "0.18.0",
+  "description": "mirror of axios, bundled and exposed as ES module",
   "author": "Mikhail Bashkirov <bashmish@gmail.com>",
   "main": "index.js",
   "devDependencies": {

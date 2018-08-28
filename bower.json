@@ -1,5 +1,5 @@
 {
   "name": "axios",
-  "description": "mirror of axios for bower, bundled and exposed as ES module",
+  "description": "mirror of axios, bundled and exposed as ES module",
   "author": "Mikhail Bashkirov <bashmish@gmail.com>"
 }
