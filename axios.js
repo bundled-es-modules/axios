@@ -5,7 +5,7 @@ function createCommonjsModule(fn, module) {
 }
 
 var axios = createCommonjsModule(function (module, exports) {
-/* axios v0.18.0 | (c) 2018 by Matt Zabriskie */
+/* axios v0.18.1 | (c) 2019 by Matt Zabriskie */
 (function webpackUniversalModuleDefinition(root, factory) {
 	module.exports = factory();
 })(commonjsGlobal, function() {
@@ -97,15 +97,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	
 	// Expose Cancel & CancelToken
-	axios.Cancel = __webpack_require__(23);
-	axios.CancelToken = __webpack_require__(24);
-	axios.isCancel = __webpack_require__(20);
+	axios.Cancel = __webpack_require__(22);
+	axios.CancelToken = __webpack_require__(23);
+	axios.isCancel = __webpack_require__(19);
 	
 	// Expose all/spread
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
-	axios.spread = __webpack_require__(25);
+	axios.spread = __webpack_require__(24);
 	
 	module.exports = axios;
 	
@@ -446,20 +446,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @license  MIT
 	 */
 	
-	// The _isBuffer check is for Safari 5-7 support, because it's missing
-	// Object.prototype.constructor. Remove this eventually
-	module.exports = function (obj) {
-	  return obj != null && (isBuffer(obj) || isSlowBuffer(obj) || !!obj._isBuffer)
+	module.exports = function isBuffer (obj) {
+	  return obj != null && obj.constructor != null &&
+	    typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
 	};
-	
-	function isBuffer (obj) {
-	  return !!obj.constructor && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
-	}
-	
-	// For Node v0.10 support. Remove this eventually.
-	function isSlowBuffer (obj) {
-	  return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
-	}
 
 
 /***/ }),
@@ -468,8 +458,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var defaults = __webpack_require__(6);
 	var utils = __webpack_require__(2);
-	var InterceptorManager = __webpack_require__(17);
-	var dispatchRequest = __webpack_require__(18);
+	var InterceptorManager = __webpack_require__(16);
+	var dispatchRequest = __webpack_require__(17);
 	
 	/**
 	 * Create a new instance of Axios
@@ -671,7 +661,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var parseHeaders = __webpack_require__(13);
 	var isURLSameOrigin = __webpack_require__(14);
 	var createError = __webpack_require__(10);
-	var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(15);
 	
 	module.exports = function xhrAdapter(config) {
 	  return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -683,21 +672,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    var request = new XMLHttpRequest();
-	    var loadEvent = 'onreadystatechange';
-	    var xDomain = false;
-	
-	    // For IE 8/9 CORS support
-	    // Only supports POST and GET calls and doesn't returns the response headers.
-	    // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
-	    if (typeof window !== 'undefined' &&
-	        window.XDomainRequest && !('withCredentials' in request) &&
-	        !isURLSameOrigin(config.url)) {
-	      request = new window.XDomainRequest();
-	      loadEvent = 'onload';
-	      xDomain = true;
-	      request.onprogress = function handleProgress() {};
-	      request.ontimeout = function handleTimeout() {};
-	    }
 	
 	    // HTTP basic authentication
 	    if (config.auth) {
@@ -712,8 +686,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    request.timeout = config.timeout;
 	
 	    // Listen for ready state
-	    request[loadEvent] = function handleLoad() {
-	      if (!request || (request.readyState !== 4 && !xDomain)) {
+	    request.onreadystatechange = function handleLoad() {
+	      if (!request || request.readyState !== 4) {
 	        return;
 	      }
 	
@@ -730,9 +704,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
 	      var response = {
 	        data: responseData,
-	        // IE sends 1223 instead of 204 (https://github.com/axios/axios/issues/201)
-	        status: request.status === 1223 ? 204 : request.status,
-	        statusText: request.status === 1223 ? 'No Content' : request.statusText,
+	        status: request.status,
+	        statusText: request.statusText,
 	        headers: responseHeaders,
 	        config: config,
 	        request: request
@@ -767,7 +740,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // This is only done if running in a standard browser environment.
 	    // Specifically not if we're in a web worker, or react-native.
 	    if (utils.isStandardBrowserEnv()) {
-	      var cookies = __webpack_require__(16);
+	      var cookies = __webpack_require__(15);
 	
 	      // Add xsrf header
 	      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -1122,46 +1095,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ }),
 /* 15 */
-/***/ (function(module, exports) {
-	
-	// btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
-	
-	var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-	
-	function E() {
-	  this.message = 'String contains an invalid character';
-	}
-	E.prototype = new Error;
-	E.prototype.code = 5;
-	E.prototype.name = 'InvalidCharacterError';
-	
-	function btoa(input) {
-	  var str = String(input);
-	  var output = '';
-	  for (
-	    // initialize result and counter
-	    var block, charCode, idx = 0, map = chars;
-	    // if the next str index does not exist:
-	    //   change the mapping table to "="
-	    //   check if d has no fractional digits
-	    str.charAt(idx | 0) || (map = '=', idx % 1);
-	    // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
-	    output += map.charAt(63 & block >> 8 - idx % 1 * 8)
-	  ) {
-	    charCode = str.charCodeAt(idx += 3 / 4);
-	    if (charCode > 0xFF) {
-	      throw new E();
-	    }
-	    block = block << 8 | charCode;
-	  }
-	  return output;
-	}
-	
-	module.exports = btoa;
-
-
-/***/ }),
-/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 	
 	var utils = __webpack_require__(2);
@@ -1218,7 +1151,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 	
 	var utils = __webpack_require__(2);
@@ -1274,15 +1207,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 	
 	var utils = __webpack_require__(2);
-	var transformData = __webpack_require__(19);
-	var isCancel = __webpack_require__(20);
+	var transformData = __webpack_require__(18);
+	var isCancel = __webpack_require__(19);
 	var defaults = __webpack_require__(6);
-	var isAbsoluteURL = __webpack_require__(21);
-	var combineURLs = __webpack_require__(22);
+	var isAbsoluteURL = __webpack_require__(20);
+	var combineURLs = __webpack_require__(21);
 	
 	/**
 	 * Throws a `Cancel` if cancellation has been requested.
@@ -1364,7 +1297,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 	
 	var utils = __webpack_require__(2);
@@ -1388,7 +1321,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports) {
 	
 	module.exports = function isCancel(value) {
@@ -1397,7 +1330,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports) {
 	
 	/**
@@ -1415,7 +1348,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports) {
 	
 	/**
@@ -1433,7 +1366,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports) {
 	
 	/**
@@ -1456,10 +1389,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 	
-	var Cancel = __webpack_require__(23);
+	var Cancel = __webpack_require__(22);
 	
 	/**
 	 * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -1517,7 +1450,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports) {
 	
 	/**
