@@ -4,6 +4,14 @@
   "description": "mirror of axios, bundled and exposed as ES module",
   "author": "Mikhail Bashkirov <bashmish@gmail.com>",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bundled-es-modules/axios.git"
+  },
+  "license": "Apache-2.0",
   "devDependencies": {
     "axios": "0.18.1",
     "rollup": "^0.62.0",
