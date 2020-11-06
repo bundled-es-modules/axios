@@ -11,4 +11,15 @@ export default [
       commonjs(),
     ],
   },
+  {
+    input: './node_modules/axios/dist/axios.min.js',
+    output: {
+      file: './axios.min.js',
+      name: 'axios',
+      format: 'es',
+    },
+    plugins: [
+      commonjs(),
+    ],
+  },
 ];
