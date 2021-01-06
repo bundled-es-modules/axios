@@ -1,6 +1,6 @@
 {
   "name": "@bundled-es-modules/axios",
-  "version": "0.18.1",
+  "version": "0.21.1",
   "description": "mirror of axios, bundled and exposed as ES module",
   "author": "Mikhail Bashkirov <bashmish@gmail.com>",
   "main": "index.js",
