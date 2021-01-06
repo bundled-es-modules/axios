@@ -5,9 +5,9 @@
   "author": "Mikhail Bashkirov <bashmish@gmail.com>",
   "main": "index.js",
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^17.0.0",
     "axios": "0.21.1",
-    "rollup": "^0.62.0",
-    "rollup-plugin-commonjs": "^9.1.3"
+    "rollup": "^2.36.1"
   },
   "scripts": {
     "build": "rollup -c ./rollup.config.js"
