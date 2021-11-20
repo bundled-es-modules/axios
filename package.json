@@ -5,7 +5,7 @@
   "author": "Mikhail Bashkirov <bashmish@gmail.com>",
   "main": "index.js",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^21.0.0",
+    "@rollup/plugin-commonjs": "^21.0.1",
     "axios": "^0.23.0",
     "rollup": "^2.60.0"
   },
